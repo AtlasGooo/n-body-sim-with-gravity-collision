@@ -21,6 +21,15 @@ public class Body {
     private double mass;         // mass
     private Color color;         // color
 
+
+    // (lzj) make changes on "Body" to adapt "CollisionSystem"
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
+    private static Color defaultColor = Color.BLACK;
+    private static boolean useRadiusUpscaling = false;
+
+    private int count;
+    private final double radius;
+
     /**
      * Constructor: creates and initializes a new Body.
      *
@@ -32,6 +41,9 @@ public class Body {
      * @param color the color of this new body (RGB)
      */
     public Body(double rx, double ry, double vx, double vy, double mass, Color color) {
+        this.count = 0;
+        this.radius = 0.0;
+
         this.rx    = rx;
         this.ry    = ry;
         this.vx    = vx;
@@ -43,14 +55,21 @@ public class Body {
     /**
      * Updates the velocity and position of the invoking Body
      * using leapfrom method, with timestep dt.
+     * 
+     * (lzj) divide "update()" into updateVelocity() and move()
      *
      * @param dt the timestep for this simulation
      */
-    public void update(double dt) {
+    public void updateVelocity(double dt) {
         vx += dt * fx / mass;
         vy += dt * fy / mass;
+        // rx += dt * vx;
+        // ry += dt * vy;
+    }
+
+    public void move(double dt){
         rx += dt * vx;
-        ry += dt * vy;
+        ry += dt * vy;        
     }
 
     /**

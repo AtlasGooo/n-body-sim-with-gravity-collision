@@ -65,13 +65,15 @@ public class NBodyBH {
             for (int i = 0; i < N; i++) {
                 bodies[i].resetForce();
                 tree.updateForce(bodies[i]);
-                bodies[i].update(dt);
+
+                bodies[i].updateVelocity(dt);
+                bodies[i].move(dt);
             }
 
             // draw the bodies
-            // (lzj : modified : change background color from black to white)            
-            StdDraw.clear(StdDraw.BLACK);
-            // StdDraw.clear();            
+            // (lzj) change background color from black to white)            
+            // StdDraw.clear(StdDraw.BLACK);
+            StdDraw.clear();            
 
 
 
