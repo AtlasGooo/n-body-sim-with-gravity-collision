@@ -113,7 +113,7 @@ public class NBodyBH {
                 bodies[i].updateVelocity(dt);
 
                 // (lzj) TODO: raplace move() with event base simulation in the future
-                bodies[i].move(dt);
+                // bodies[i].move(dt);
 
             }
 
