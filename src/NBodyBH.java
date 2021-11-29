@@ -30,7 +30,7 @@ public class NBodyBH {
         double radius = console.nextDouble();      // radius of universe
 
         // turn on animation mode and rescale coordinate system
-        StdDraw.show(0);
+        StdDraw.show();
         StdDraw.setXscale(-radius, +radius);
         StdDraw.setYscale(-radius, +radius);
 
