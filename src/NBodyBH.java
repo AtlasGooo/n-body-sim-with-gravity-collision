@@ -17,6 +17,8 @@ import java.awt.Color;
 import java.util.Scanner;
 import edu.princeton.cs.algs4.*;
 
+import java.lang.Math;
+
 
 public class NBodyBH {
 
@@ -46,7 +48,11 @@ public class NBodyBH {
             int green   = console.nextInt();
             int blue    = console.nextInt();
             Color color = new Color(red, green, blue);
-            bodies[i]   = new Body(px, py, vx, vy, mass, color);
+            
+
+            // (lzj)
+            double rand_radius = 1E04 *( 0.5 + 2*Math.random() );
+            bodies[i]   = new Body(px, py, vx, vy, mass, color, radius=rand_radius);
         }
 
 
@@ -67,13 +73,15 @@ public class NBodyBH {
                 tree.updateForce(bodies[i]);
 
                 bodies[i].updateVelocity(dt);
+
+                // (lzj) TODO: raplace move() with event base simulation in the future
                 bodies[i].move(dt);
             }
 
             // draw the bodies
             // (lzj) change background color from black to white)            
-            // StdDraw.clear(StdDraw.BLACK);
-            StdDraw.clear();            
+            StdDraw.clear(StdDraw.BLACK);
+            // StdDraw.clear();            
 
 
 

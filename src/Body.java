@@ -40,9 +40,10 @@ public class Body {
      * @param mass  the mass of this new body
      * @param color the color of this new body (RGB)
      */
-    public Body(double rx, double ry, double vx, double vy, double mass, Color color) {
+    public Body(double rx, double ry, double vx, double vy, double mass, Color color, double radius) {
+        // (lzj) 
         this.count = 0;
-        this.radius = 0.0;
+        this.radius = radius;
 
         this.rx    = rx;
         this.ry    = ry;
@@ -66,11 +67,19 @@ public class Body {
         // rx += dt * vx;
         // ry += dt * vy;
     }
-
     public void move(double dt){
         rx += dt * vx;
         ry += dt * vy;        
     }
+
+    /**
+     * (lzj) Returns the total number of collisions involving this particle.
+     * @return 
+     */
+    public int count(){
+        return count;
+    }
+
 
     /**
      * Returns the Euclidean distance between the invoking Body and b.
@@ -86,6 +95,8 @@ public class Body {
 
     /**
      * Resets the force (both x- and y-components) of the invoking Body to 0.
+     * 
+     * (lzj) TODO: modify reset force to reset() ?
      */
     public void resetForce() {
         fx = 0.0;
@@ -111,10 +122,12 @@ public class Body {
 
     /**
      * Draws the invoking Body. 
+     * (lzj) modify draw point to draw circle
      */
     public void draw() {
         StdDraw.setPenColor(color);
-        StdDraw.point(rx, ry);
+        // StdDraw.point(rx, ry);
+        StdDraw.filledCircle(rx, ry, radius);
     }
 
     /**
@@ -153,6 +166,7 @@ public class Body {
         double x = (a.rx * a.mass + b.rx * b.mass) / m;
         double y = (a.ry * a.mass + b.ry * b.mass) / m;
 
-        return new Body(x, y, a.vx, b.vx, m, a.color);
+        /// (lzj) TODO: radius = -1 means aggregate body !!!!! check if exist mistakes !!!!!
+        return new Body(x, y, a.vx, b.vx, m, a.color, -1);
     }
 }
