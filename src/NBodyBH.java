@@ -33,6 +33,8 @@ public class NBodyBH {
 
         // turn on animation mode and rescale coordinate system
         StdDraw.show(0);
+
+        // (lzj) TODO: in the Body's time to hit horizontal and verticle, the canvas default height and width is 1.0
         StdDraw.setXscale(-radius, +radius);
         StdDraw.setYscale(-radius, +radius);
 
