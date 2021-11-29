@@ -136,22 +136,22 @@ public class Body {
     }
 
     // (lzj)
-    public double timeToHitHorizontalWall() {
+    public double timeToHitHorizontalWall(double ymin, double ymax) {
         if (vy < 0) {
-            return (radius - ry) / vy;
+            return (radius - ry - ymin) / vy;
         } else if (vy > 0) {
-            return (1.0 - ry - radius) / vy;
+            return (ymax - ry - radius) / vy;
         } else {
             return INFINITY;
         }
     }  
 
     // (lzj)
-    public double timeToHitVerticalWall() {
+    public double timeToHitVerticalWall(double xmin, double xmax) {
         if (vx < 0) {
-            return (radius - rx) / vx;
+            return (radius - rx - xmin) / vx;
         } else if (vx > 0) {
-            return (1.0 - rx - radius) / vx;
+            return (xmax - rx - radius) / vx;
         } else {
             return INFINITY;
         }

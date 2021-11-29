@@ -29,14 +29,14 @@ public class NBodyBH {
         
         final double dt = 0.1;                     // time quantum
         int N = console.nextInt();                 // number of particles
-        double radius = console.nextDouble();      // radius of universe
+        double map_radius = console.nextDouble();      // map_radius of universe
 
         // turn on animation mode and rescale coordinate system
         StdDraw.show(0);
 
         // (lzj) TODO: in the Body's time to hit horizontal and verticle, the canvas default height and width is 1.0
-        StdDraw.setXscale(-radius, +radius);
-        StdDraw.setYscale(-radius, +radius);
+        StdDraw.setXscale(-map_radius, +map_radius);
+        StdDraw.setYscale(-map_radius, +map_radius);
 
         // read in and initialize bodies
         Body[] bodies = new Body[N];               // array of N bodies
@@ -54,14 +54,14 @@ public class NBodyBH {
 
             // (lzj)
             double rand_radius = 1E04 *( 0.5 + 2*Math.random() );
-            bodies[i]   = new Body(px, py, vx, vy, mass, color, radius=rand_radius);
+            bodies[i]   = new Body(px, py, vx, vy, mass, color, rand_radius);
         }
 
 
         // simulate the universe
         for (double t = 0.0; true; t = t + dt) {
 
-            Quad quad = new Quad(0, 0, radius * 2);
+            Quad quad = new Quad(0, 0, map_radius * 2);
             BHTree tree = new BHTree(quad);
 
             // build the Barnes-Hut tree
