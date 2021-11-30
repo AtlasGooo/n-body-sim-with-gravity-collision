@@ -276,6 +276,7 @@ public class  IncrementEvent {
 
         // or read from standard input
         else {
+            double map_radius = StdIn.readDouble();
             int n = StdIn.readInt();
             System.out.println(n + "bodies, Reading from STDIN...");
             bodies = new Body[n];
