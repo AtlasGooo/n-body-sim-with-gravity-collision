@@ -29,20 +29,16 @@ public class NBodyBH {
         // for reading from stdin
         Scanner console = new Scanner(System.in);
         
-        /// (lzj)
-        final double dt = 0.005;                     // time quantum
+
 
 
         int N = console.nextInt();                 // number of particles
+
+
+        // (lzj) TODO: adapt the input to data format
         // double map_radius = console.nextDouble();      // map_radius of universe
         double map_radius = 1.0;
-
-        /// (lzj) for testing
-        // if(N > 3)
-        // N = 3;
         
-
-
 
         // turn on animation mode and rescale coordinate system
         StdDraw.show(0);
@@ -70,10 +66,9 @@ public class NBodyBH {
             Color color = new Color(red, green, blue);
             
 
-            // (lzj)
+            // (lzj) (test)
             // double rand_radius = 1E04 *( 0.5 + 2*Math.random() );
             mass *= 1E16;
-
             if(i == 5){
                 mass *= 10;
                 radius *= 3;
@@ -86,15 +81,15 @@ public class NBodyBH {
 
         // (lzj)
         IncrementEvent increment_sys = new IncrementEvent(bodies);
-        increment_sys.setRedrawHZ(10);
+        increment_sys.setRedrawHZ(30);
         
-
-
-        // for(double t = 0.0; true; t = t+dt){
-        //     increment_sys.increment(dt);
-        // }
-
-
+        /**
+         * (lzj) TODO: modify to dynamic dt accroding to the largest 0.2r/v
+         * Also, call IncrementEvent::setRedrawHZ() to dynamic set redraw HZ for better vision display
+         */
+        final double dt = 0.01;          
+        
+        
         for (double t = 0.0; true; t = t + dt) {
 
             Quad quad = new Quad(0, 0, map_radius * 2);
@@ -109,31 +104,11 @@ public class NBodyBH {
             for (int i = 0; i < N; i++) {
                 bodies[i].resetForce();
                 tree.updateForce(bodies[i]);
-
                 bodies[i].updateVelocity(dt);
 
-                // (lzj) TODO: raplace move() with event base simulation in the future
-                // bodies[i].move(dt);
-
             }
-
             increment_sys.increment(dt);
-
-
-
-
-            // (lzj) change background color from black to white)            
-            // StdDraw.clear(StdDraw.BLACK);
-            // StdDraw.clear();            
-
-            // for (int i = 0; i < N; i++)
-            //     bodies[i].draw();
-            // StdDraw.show(10);
         }
-
-
-
-
 
 
     }
