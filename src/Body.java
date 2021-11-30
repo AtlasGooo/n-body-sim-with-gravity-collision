@@ -29,7 +29,7 @@ public class Body {
     private static Color defaultColor = Color.BLACK;
     private static boolean useRadiusUpscaling = false;
 
-    private int count;
+    public int count;
     public final double radius;
 
 
@@ -125,9 +125,13 @@ public class Body {
 
         // this discriminant comes from solution of a quadratic equation, see some Physics dude.
         double discriminant = dvdr * dvdr - dvdv * (drdr - sigma * sigma);
-        if (drdr < sigma * sigma) {
-            System.out.println("Particles overlap !!! UNEXPECTED behaviour expected :p");
-        }
+
+        // (lzj) TODO: temporary uncomment this
+        // if (drdr < sigma * sigma) {
+        //     System.out.println("Particles overlap !!! UNEXPECTED behaviour expected :p");
+        // }
+
+
         if (discriminant < 0) {
             return INFINITY;    // there are no solutions to equation or the time to collide 
         }
@@ -258,7 +262,12 @@ public class Body {
      */
     public void addForce(Body b) {
         Body a = this;
-        double EPS = 3E4;      // softening parameter
+
+        /// (lzj) Fuck here !!
+        double EPS = 0.0000001;      // softening parameter
+        // double EPS = 3E4;      // softening parameter
+
+
         double dx = b.rx - a.rx;
         double dy = b.ry - a.ry;
         double dist = Math.sqrt(dx*dx + dy*dy);
@@ -267,22 +276,13 @@ public class Body {
         a.fy += F * dy / dist;
     }
 
-    /**
-     * Draws the invoking Body. 
-     * (lzj) modify draw point to draw circle
-     */
     public void draw() {
         StdDraw.setPenColor(color);
         // StdDraw.point(rx, ry);
         StdDraw.filledCircle(rx, ry, radius);
     }
 
-    /**
-     * Returns a string representation of this body formatted nicely.
-     *
-     * @return a formatted string containing this body's x- and y- positions,
-     *         velocities, and mass
-     */
+    
     public String toString() {
         return String.format("%10.3E %10.3E %10.3E %10.3E %10.3E", rx, ry, vx, vy, mass);
     }

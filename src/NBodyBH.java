@@ -25,22 +25,27 @@ public class NBodyBH {
     /**
      * Auxiliary function to dynamically modify dt according to bodies r/v
      */
-    public static double dynamicDt(Body[] bodies, double C1, double default_dt){
+    public static double dynamicDt(Body[] bodies, double C1){
         /**
          * dt = C1 * ( min r/v)
          * HZ = 1 / ( C2 * dt )
-         * For p10.txt, initially use C1 = 1, C2 = 100/3 ~= 33.3
+         * default C1 = 0.1 , C2 = 0.2 ?
          */
         
-        double min_rv_ratio = 1.0;
+        double min_rv_ratio = 0.2;
+        double vmax = 0.0;
+
         for(Body b : bodies){
-            double rv_ratio = b.radius / Math.max(Math.abs(b.vx), Math.abs(b.vy) );
+            vmax = Math.max(Math.abs(b.vx), Math.abs(b.vy) );
+            if(vmax == 0.0)
+                continue;
+            double rv_ratio = b.radius / vmax;
             if(min_rv_ratio > rv_ratio){
                 min_rv_ratio = rv_ratio; 
             }
         }
-        
-        double dt = Math.min(default_dt, C1*min_rv_ratio);
+
+        double dt = C1 * min_rv_ratio;
         return dt;
     }
 
@@ -48,7 +53,14 @@ public class NBodyBH {
      * Auxiliary function to dynamically modify re-draw hz according to dt
      */    
     public static double dynamicHz(double dt, double C2){
-        return (double)1 / (C2*dt);
+        /**
+         * attention ! the constraint: 1/hz < dt !!!!
+         */
+        if(C2 >= 1.0)
+            C2 = 0.9;
+        double hz =  1.0/(C2*dt) ;
+
+        return hz;
     }
 
 
@@ -85,14 +97,13 @@ public class NBodyBH {
             Color color = new Color(red, green, blue);
             
 
-            // (lzj) (test)
+            // (lzj) (test) for p10.txt
             // mass *= 7E16;
-            mass *= 7E18;
-
-            if(i == 5){
-                mass *= 10;
-                radius *= 3;
-            }
+            // mass *= 7E18;
+            // if(i == 5){
+            //     mass *= 10;
+            //     radius *= 3;
+            // }
 
 
             bodies[i]   = new Body(px, py, vx, vy, mass, color, radius);
@@ -102,28 +113,39 @@ public class NBodyBH {
         /**
          * dt = C1 * ( min r/v)
          * HZ = 1 / ( C2 * dt )
-         * default C1 = 0.2, C2 = 3.33
+         * default C1 = 0.2, C2 = 0.2
          * 
          */
-        final double C1 = 0.2, C2 = 5;
-        final double default_dt = 0.01;
-        final double default_hz = 30.0;
-        double dt = default_dt; 
-        double hz = default_hz;
+
+        /**
+         * 
+         * Can't modify C1 and C2 casually because there maybe a bug ... maybe a bug related to dt and hz
+         */
+        // final double C1 = 0.3 or 0.8, C2 = 0.8;    // can't modify easily because there maybe a bug ...
+        final double C1 = 0.8, C2 = 0.8;
+        double dt = 1.0; 
+        double hz = 30.0;
 
         IncrementEvent increment_sys = new IncrementEvent(bodies, 0.0, map_radius, 0.0, map_radius);
-        increment_sys.setRedrawHZ(hz);
-        
-
-
-    
 
         
+
+        // set dt for first loop
+        dt = dynamicDt(bodies, C1); 
+        hz = dynamicHz(dt, C2);
+        increment_sys.setRedrawHZ(hz);        
+        // increment_sys.setRedrawHZ(hz);
+
+        // (lzj) (test)
+        StdOut.printf("\nInitial : dt=%.7f, hz=%.7f \n\n",dt,hz);   
+        
+
 
         for (double t = 0.0; true; t = t + dt) {
 
             
-            Quad quad = new Quad(0, 0, map_radius * 2);
+            // (lzj) fuck! look at the param here !
+            Quad quad = new Quad(0.5*map_radius, 0.5*map_radius, map_radius * 2);
             BHTree tree = new BHTree(quad);
 
             // build the Barnes-Hut tree
@@ -138,17 +160,17 @@ public class NBodyBH {
                 bodies[i].updateVelocity(dt);
             }
 
+
             // after update velocity, use event base method to execute increment
             increment_sys.increment(dt);
 
-            dt = dynamicDt(bodies, C1, default_dt);
+
+            // dynamically change dt and hz for next loop
+            dt = dynamicDt(bodies, C1);
             hz = dynamicHz(dt, C2);
-
-            StdOut.printf("dt=%.3f, hz=%.3f \n",dt,hz);
-
             increment_sys.setRedrawHZ(hz);
-
-
+            // (lzj) (test) 
+            StdOut.printf("dt=%.3f, hz=%.3f \n",dt,hz);
 
         }
 

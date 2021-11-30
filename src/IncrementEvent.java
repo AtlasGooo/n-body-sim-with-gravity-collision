@@ -3,6 +3,8 @@ import edu.princeton.cs.algs4.*;
 import java.awt.Color;
 import java.util.PriorityQueue;
 
+import javax.swing.text.AbstractDocument.BranchElement;
+
 
 /**
  * The 2D-N-Body Elastic collision simulator class. The class provides a
@@ -83,9 +85,13 @@ public class  IncrementEvent {
             p.draw();       // redraw each paricle
         }
         StdDraw.show();     // in case double buffering is used in StdDraw
-        StdDraw.pause(20);  // freeze StdDraw for 20 ms so that frame may be observed
+        StdDraw.pause(1);  // freeze StdDraw for 20 ms so that frame may be observed
 
         // schedule redraw of frames based on Framerate frequency 
+
+
+
+        // (lzj) TODO: maybe this is the problem !!!!!!! t<limit -> t+(1.0/HZ)<limit
         if (t < limit) {
             pq.add(new Event(t + 1.0 / HZ, null, null));
         }
@@ -116,14 +122,15 @@ public class  IncrementEvent {
          * simulation !!!!! 
          */
         pq = new PriorityQueue<>();
-        t = 0;
+        t = 0.0;
 
         for (Body a : bodies) {
+            a.count = 0;
             predict(a, limit);
         }
 
         /// (lzj) attention ! modify here, t !
-        pq.add(new Event(0, null, null));       // add redraw event
+        pq.add(new Event(0.0, null, null));       // add redraw event
 
 
         /// (lzj) (test)
@@ -138,11 +145,29 @@ public class  IncrementEvent {
         // the main event driven simulation loop
         while (!pq.isEmpty()) {
 
+
+            // (lzj) (test)
+            StdOut.println("Test point 1");            
+
+
             // get impending event, drive the simulation, discard if invalids
             Event e = pq.remove();
+
             if (!e.isValid()) {
                 continue;
             }
+
+            // (lzj) TODO: maybe here is the mistake ! didn't judge e.time < limit ?            
+            // if(e.time > limit){
+            //     StdOut.println("here !!!");
+            //     break;                
+            // }
+
+
+            // (lzj) (test)
+            StdOut.println("Test point 2");   
+
+
 
             // advance all bodies in time and bring them to time of current event
             for (Body p : bodies) {
@@ -150,18 +175,34 @@ public class  IncrementEvent {
             }
             t = e.time;         // advance the clock
 
+
+
+            // (lzj) (test)
+            // StdOut.println("Test point 3");   
+
+
+
+
             // update the body velocities
+            // (lzj) (test)
             Body a = e.a, b = e.b;
             if (a != null && b != null) {
+                StdOut.println("Test point 4.1"); 
                 a.bounceOff(b);
             } else if (a != null) {
+                StdOut.println("Test point 4.2"); 
                 a.bounceOffHorizontalWall();
             } else if (b != null) {
+                StdOut.println("Test point 4.3");                 
                 b.bounceOffVerticalWall();
             } else {
+                // StdOut.println("Test point 4.4");                 
                 redraw(limit);
                 continue;
             }
+
+            // (lzj) (test)
+            StdOut.println("Test point 5");   
 
             predict(a, limit);      // add new events related to a 
             predict(b, limit);      // and b
