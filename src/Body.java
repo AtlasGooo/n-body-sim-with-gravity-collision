@@ -30,7 +30,7 @@ public class Body {
     private static boolean useRadiusUpscaling = false;
 
     private int count;
-    private final double radius;
+    public final double radius;
 
 
     // (lzj)
