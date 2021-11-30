@@ -21,12 +21,15 @@ public class  IncrementEvent {
     private Body[] bodies;       // the array of bodies
     private double t = 0.0;                   // simulation clock time
 
+    // (lzj) add map radius xmin,xmax,ymin,ymax
+    private final double xmin,xmax,ymin,ymax;
+
     /**
      * Constructs the simulator class with given array of bodies.
      *
      * @param bodies the array of bodies
      */
-    public IncrementEvent(Body[] bodies) {
+    public IncrementEvent(Body[] bodies, double xmin, double xmax, double ymin, double ymax) {
         // make a defensive copy to support immuatability
 
 
@@ -40,6 +43,11 @@ public class  IncrementEvent {
         this.bodies = bodies;
         this.pq = new PriorityQueue<>();
         // (lzj)
+        this.xmin = xmin;
+        this.xmax = xmax;
+        this.ymin = ymin;
+        this.ymax = ymax;
+
 
         // set default double buffering 
         useDoubleBuffering(true);
@@ -58,11 +66,11 @@ public class  IncrementEvent {
                 pq.add(new Event(t + dt, a, p));
             }
         }
-        double dtV = a.timeToHitVerticalWall(0.0, 1.0);
+        double dtV = a.timeToHitVerticalWall(xmin, xmax);
         if (t + dtV <= limit) {
             pq.add(new Event(t + dtV, null, a));
         }
-        double dtH = a.timeToHitHorizontalWall(0.0, 1.0);
+        double dtH = a.timeToHitHorizontalWall(ymin, ymax);
         if (t + dtH <= limit) {
             pq.add(new Event(t + dtH, a, null));
         }
@@ -119,7 +127,7 @@ public class  IncrementEvent {
 
 
         /// (lzj) (test)
-        // StdOut.println("Start increment !");
+        StdOut.println("Start increment !");
         // for (int i = 0; i<4; ++i) {
         //     StdOut.printf("body[%d], (%.2f,%.2f,%.2f,%.2f) \n",i,bodies[i].rx,bodies[i].ry, bodies[i].vx,bodies[i].vy);
         // }
@@ -166,12 +174,9 @@ public class  IncrementEvent {
         // for (int i = 0; i<4; ++i) {
         //     StdOut.printf("body[%d], (%.2f,%.2f,%.2f,%.2f) \n",i,bodies[i].rx,bodies[i].ry, bodies[i].vx,bodies[i].vy);
         // }
-        // StdOut.println("Stop increment !");
+        StdOut.println("Stop increment !");
 
 
-
-
-        // System.out.println("Simulation over !");
         StdOut.println();
         StdOut.println();
         StdOut.println();
@@ -290,7 +295,7 @@ public class  IncrementEvent {
             }
         }
 
-        IncrementEvent system = new IncrementEvent(bodies);
+        IncrementEvent system = new IncrementEvent(bodies, 0.0, 1.0, 0.0, 1.0);
         system.setRedrawHZ(10);
 
 

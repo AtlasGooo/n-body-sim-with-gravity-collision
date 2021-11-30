@@ -21,7 +21,7 @@ import java.lang.Math;
 
 
 public class NBodyBH {
-
+    
     public static void main(String[] args) {
         
         StdDraw.setCanvasSize(700,700);
@@ -31,13 +31,17 @@ public class NBodyBH {
         
 
 
+        // String radius = console.next();
+        double map_radius = console.nextDouble();      // map_radius of universe
+        // double map_radius = 1.0;
+
 
         int N = console.nextInt();                 // number of particles
 
 
         // (lzj) TODO: adapt the input to data format
-        // double map_radius = console.nextDouble();      // map_radius of universe
-        double map_radius = 1.0;
+
+
         
 
         // turn on animation mode and rescale coordinate system
@@ -68,7 +72,7 @@ public class NBodyBH {
 
             // (lzj) (test)
             // double rand_radius = 1E04 *( 0.5 + 2*Math.random() );
-            mass *= 1E16;
+            mass *= 7E16;
             if(i == 5){
                 mass *= 10;
                 radius *= 3;
@@ -80,7 +84,7 @@ public class NBodyBH {
 
 
         // (lzj)
-        IncrementEvent increment_sys = new IncrementEvent(bodies);
+        IncrementEvent increment_sys = new IncrementEvent(bodies, 0.0, map_radius, 0.0, map_radius);
         increment_sys.setRedrawHZ(30);
         
         /**
