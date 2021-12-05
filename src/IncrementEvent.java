@@ -1,55 +1,32 @@
 import edu.princeton.cs.algs4.*;
-
 import java.awt.Color;
 import java.util.PriorityQueue;
 
-import javax.swing.text.AbstractDocument.BranchElement;
 
-
-/**
- * The 2D-N-Body Elastic collision simulator class. The class provides a
- * relatively efficient API for any simulations the client might want to do with
- * elastic 2-D bodies. It deals with the events occurring during simulation.
- * It uses the {@code Body} data type to achieve this goal. Events are
- * scheduled for each possible collisions and are processed in the chronological
- * order.
- * 
- */
 public class  IncrementEvent {
 
     private double HZ = 0.5;    // redraw frequency as redraws per clock tick (in Simulator time)
-
     private PriorityQueue<Event> pq;    // the event priority queue
     private Body[] bodies;       // the array of bodies
     private double t = 0.0;                   // simulation clock time
-
-    // (lzj) add map radius xmin,xmax,ymin,ymax
     private final double xmin,xmax,ymin,ymax;
 
     /**
      * Constructs the simulator class with given array of bodies.
-     *
      * @param bodies the array of bodies
+     * @param xmin the minimum x value of the global map
+     * @param xmax the maximum x value of the global map
+     * @param ymin the minimum y value of the global map 
+     * @param ymax the maximum y value of the global map
      */
     public IncrementEvent(Body[] bodies, double xmin, double xmax, double ymin, double ymax) {
-        // make a defensive copy to support immuatability
-
-
-        /**
-         * (lzj) TODO: attention here !
-         * the bodies should be modified to pass by reference
-         * so that the simulation can be called several time and continue from last state
-         * 
-         */
-        // this.bodies = bodies.clone();
+        // (lzj) the bodies should be modified to pass by reference
         this.bodies = bodies;
         this.pq = new PriorityQueue<>();
-        // (lzj)
         this.xmin = xmin;
         this.xmax = xmax;
         this.ymin = ymin;
         this.ymax = ymax;
-
 
         // set default double buffering 
         useDoubleBuffering(true);
@@ -80,30 +57,18 @@ public class  IncrementEvent {
 
     // Handles the Redraw event by redrawing all the bodies with updated positions
     private void redraw(double limit) {
-        StdDraw.clear();    // clear the canvas
+        StdDraw.clear(); 
         for (Body p : bodies) {
-            p.draw();       // redraw each paricle
+            p.draw();      
         }
-        StdDraw.show();     // in case double buffering is used in StdDraw
-        StdDraw.pause(1);  // freeze StdDraw for 20 ms so that frame may be observed
+        StdDraw.show();     
+        StdDraw.pause(1);  
 
-        // schedule redraw of frames based on Framerate frequency 
-
-
-
-        // (lzj) TODO: maybe this is the problem !!!!!!! t<limit -> t+(1.0/HZ)<limit
         if (t < limit) {
             pq.add(new Event(t + 1.0 / HZ, null, null));
         }
     }
 
-    /**
-     * A switch for a setting for the StdDraw library, may improve frame-rates
-     * during simulation.
-     *
-     * @param yes if {@code true} double buffering is enabled (this is default),
-     * otherwise it's disabled
-     */
     public static void useDoubleBuffering(boolean yes) {
         if (yes) {
             StdDraw.enableDoubleBuffering();
@@ -112,15 +77,9 @@ public class  IncrementEvent {
         }
     }
 
-
-
     public void increment(double limit) {
-        // initialize the PQ with collision events and redraw event
 
-        /**
-         * (lzj) attention here ! If you call "increment()" multiple times, you should set t=0 for new
-         * simulation !!!!! 
-         */
+        // (lzj) attention here ! If you call "increment()" multiple times, you should set t=0
         pq = new PriorityQueue<>();
         t = 0.0;
 
@@ -129,45 +88,17 @@ public class  IncrementEvent {
             predict(a, limit);
         }
 
-        /// (lzj) attention ! modify here, t !
-        pq.add(new Event(0.0, null, null));       // add redraw event
-
-
-        /// (lzj) (test)
-        StdOut.println("Start increment !");
-        // for (int i = 0; i<4; ++i) {
-        //     StdOut.printf("body[%d], (%.2f,%.2f,%.2f,%.2f) \n",i,bodies[i].rx,bodies[i].ry, bodies[i].vx,bodies[i].vy);
-        // }
-        StdOut.println();
-
+        pq.add(new Event(0.0, null, null));   
 
 
         // the main event driven simulation loop
-        while (!pq.isEmpty()) {
-
-
-            // (lzj) (test)
-            StdOut.println("Test point 1");            
-
+        while (!pq.isEmpty()) {        
 
             // get impending event, drive the simulation, discard if invalids
             Event e = pq.remove();
 
-            if (!e.isValid()) {
+            if (!e.isValid())
                 continue;
-            }
-
-            // (lzj) TODO: maybe here is the mistake ! didn't judge e.time < limit ?            
-            // if(e.time > limit){
-            //     StdOut.println("here !!!");
-            //     break;                
-            // }
-
-
-            // (lzj) (test)
-            StdOut.println("Test point 2");   
-
-
 
             // advance all bodies in time and bring them to time of current event
             for (Body p : bodies) {
@@ -175,52 +106,22 @@ public class  IncrementEvent {
             }
             t = e.time;         // advance the clock
 
-
-
-            // (lzj) (test)
-            // StdOut.println("Test point 3");   
-
-
-
-
             // update the body velocities
-            // (lzj) (test)
             Body a = e.a, b = e.b;
             if (a != null && b != null) {
-                StdOut.println("Test point 4.1"); 
                 a.bounceOff(b);
             } else if (a != null) {
-                StdOut.println("Test point 4.2"); 
                 a.bounceOffHorizontalWall();
-            } else if (b != null) {
-                StdOut.println("Test point 4.3");                 
+            } else if (b != null) {                
                 b.bounceOffVerticalWall();
-            } else {
-                // StdOut.println("Test point 4.4");                 
+            } else {               
                 redraw(limit);
                 continue;
             }
 
-            // (lzj) (test)
-            StdOut.println("Test point 5");   
-
             predict(a, limit);      // add new events related to a 
             predict(b, limit);      // and b
         }
-
-
-
-
-        /// (lzj) (test)
-        // for (int i = 0; i<4; ++i) {
-        //     StdOut.printf("body[%d], (%.2f,%.2f,%.2f,%.2f) \n",i,bodies[i].rx,bodies[i].ry, bodies[i].vx,bodies[i].vy);
-        // }
-        StdOut.println("Stop increment !");
-
-
-        StdOut.println();
-        StdOut.println();
-        StdOut.println();
     }
 
     /**
@@ -237,20 +138,7 @@ public class  IncrementEvent {
         this.HZ = HZ;
     }
 
-    /**
-     * ************************************************************************
-     * This class encapsulates the details associated with an event during
-     * simulation. Event implicitly can be of three types based on whether a or
-     * b are null or not. We use this strategy to avoid use of an Event type
-     * classifying variable in the class.
-     * <pre>
-     *      - a and b both null:         redraw event
-     *      - a null, b not null:        collision with vertical wall
-     *      - a not null, b null:        collision with horizontal wall
-     *      - a and b both not null      binary collision between a and b
-     * </pre >
-     **************************************************************************
-     */
+
     private static class Event implements Comparable<Event> {
 
         public double time;             // time till collision event
@@ -296,7 +184,6 @@ public class  IncrementEvent {
             }
             return true;
         }
-
     }
 
     //  for unit testing of the class
@@ -307,6 +194,7 @@ public class  IncrementEvent {
         // the array of bodies
         Body[] bodies;
         Body.useRadiusUpscaling(true);
+
         // create n random bodies
         if (args.length == 1) {
             int n = Integer.parseInt(args[0]);
@@ -340,18 +228,8 @@ public class  IncrementEvent {
 
         IncrementEvent system = new IncrementEvent(bodies, 0.0, 1.0, 0.0, 1.0);
         system.setRedrawHZ(10);
-
-
-        /// (lzj) TODO: try to modify it so that it can be called multiple time to start from last state
         system.increment(10000);
 
-        // for(int i = 0; i<4; ++i){
-        //     system.increment(5);            
-        // }
-
-        
-
         }
-
 }
 

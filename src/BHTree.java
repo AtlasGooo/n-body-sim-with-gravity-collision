@@ -1,13 +1,4 @@
-/**
- * BHTree.java
- *
- * Represents a quadtree for the Barnes-Hut algorithm.
- *
- * Dependencies: Body.java Quad.java
- *
- * @author chindesaurus
- * @version 1.00 
- */
+
 
 import java.awt.Color;
 

@@ -1,12 +1,4 @@
-/**
- * Body.java
- *
- * Represents a Body (a point mass) and its position, 
- * velocity, mass, color, and the net force acting upon it.
- *
- * @author chindesaurus
- * @version 1.00
- */
+
 import java.awt.Color;
 import edu.princeton.cs.algs4.*;
 
@@ -14,17 +6,13 @@ public class Body {
 
     // gravitational constant
     private static final double G = 6.67e-11;
-    // (lzj) temporary change some properties to public for printing info
+
     public double rx, ry;       // position
     public double vx, vy;       // velocity
     private double fx, fy;       // force
     private double mass;         // mass
     private Color color;         // color
 
-
-
-
-    // (lzj) make changes on "Body" to adapt "CollisionSystem"
     private static final double INFINITY = Double.POSITIVE_INFINITY;
     private static Color defaultColor = Color.BLACK;
     private static boolean useRadiusUpscaling = false;
@@ -32,11 +20,8 @@ public class Body {
     public int count;
     public final double radius;
 
-
-    // (lzj)
     public Body() {
         this.count = 0;
-
         this.rx = StdRandom.uniform(0.5, 0.95);
         this.ry = StdRandom.uniform(0.5, 0.95);
         this.vx = StdRandom.uniform(-0.5, 0.5);
@@ -58,11 +43,8 @@ public class Body {
      * @param radius the radius of this body
      */
     public Body(double rx, double ry, double vx, double vy, double mass, Color color, double radius) {
-        // (lzj) add
         this.count = 0;
         this.radius = radius;
-
-
         this.rx    = rx;
         this.ry    = ry;
         this.vx    = vx;
@@ -74,25 +56,20 @@ public class Body {
     /**
      * Updates the velocity and position of the invoking Body
      * using leapfrom method, with timestep dt.
-     * 
-     * (lzj) divide "update()" into updateVelocity() and move()
-     *
      * @param dt the timestep for this simulation
      */
     public void updateVelocity(double dt) {
         vx += dt * fx / mass;
         vy += dt * fy / mass;
-        // rx += dt * vx;
-        // ry += dt * vy;
     }
+
     public void move(double dt){
         rx += dt * vx;
         ry += dt * vy;        
     }
 
     /**
-     * (lzj) Returns the total number of collisions involving this particle.
-     * @return 
+     * @return Returns the total number of collisions involving this particle
      */
     public int count(){
         return count;
@@ -131,7 +108,6 @@ public class Body {
         //     System.out.println("Particles overlap !!! UNEXPECTED behaviour expected :p");
         // }
 
-
         if (discriminant < 0) {
             return INFINITY;    // there are no solutions to equation or the time to collide 
         }
@@ -139,7 +115,6 @@ public class Body {
         // we ignore the other solution (Why ? because there can be two collisons in Mathematics; think about it, try it)
     }
 
-    // (lzj)
     public double timeToHitHorizontalWall(double ymin, double ymax) {
         if (vy < 0) {
             return (radius - ry - ymin) / vy;
@@ -150,7 +125,6 @@ public class Body {
         }
     }  
 
-    // (lzj)
     public double timeToHitVerticalWall(double xmin, double xmax) {
         if (vx < 0) {
             return (radius - rx - xmin) / vx;
@@ -161,7 +135,6 @@ public class Body {
         }
     }
 
-    // (lzj)
     public void bounceOff(Body that) {
         double dx = that.rx - this.rx;
         double dy = that.ry - this.ry;
@@ -190,13 +163,11 @@ public class Body {
         that.count++;
     }
 
-    // (lzj)
     public void bounceOffVerticalWall() {
         this.vx = -this.vx;
         count++;
     }
 
-    // (lzj)
     public void bounceOffHorizontalWall() {
         this.vy = -this.vy;
         count++;
@@ -223,15 +194,6 @@ public class Body {
         return useRadiusUpscaling;
     }
 
-
-
-
-
-
-
-
-
-
     /**
      * Returns the Euclidean distance between the invoking Body and b.
      *
@@ -246,8 +208,6 @@ public class Body {
 
     /**
      * Resets the force (both x- and y-components) of the invoking Body to 0.
-     * 
-     * (lzj) TODO: modify reset force to reset() ?
      */
     public void resetForce() {
         fx = 0.0;
@@ -263,10 +223,7 @@ public class Body {
     public void addForce(Body b) {
         Body a = this;
 
-        /// (lzj) Fuck here !!
         double EPS = 0.0000001;      // softening parameter
-        // double EPS = 3E4;      // softening parameter
-
 
         double dx = b.rx - a.rx;
         double dy = b.ry - a.ry;
@@ -278,13 +235,7 @@ public class Body {
 
     public void draw() {
         StdDraw.setPenColor(color);
-        // StdDraw.point(rx, ry);
         StdDraw.filledCircle(rx, ry, radius);
-    }
-
-    
-    public String toString() {
-        return String.format("%10.3E %10.3E %10.3E %10.3E %10.3E", rx, ry, vx, vy, mass);
     }
 
     /**
@@ -313,7 +264,7 @@ public class Body {
         double x = (a.rx * a.mass + b.rx * b.mass) / m;
         double y = (a.ry * a.mass + b.ry * b.mass) / m;
 
-        /// (lzj) TODO: radius = -1 means aggregate body !!!!! check if exist mistakes !!!!!
+        /// (lzj) TODO: radius = -1 means aggregate body !!!!! check here if mistakes exist !!!!!
         return new Body(x, y, a.vx, b.vx, m, a.color, -1);
     }
 }
